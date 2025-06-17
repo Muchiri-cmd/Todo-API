@@ -1,18 +1,13 @@
 import { Request,Response,NextFunction } from "express";
-import { PrismaClient } from "@prisma/client";
-const client = new PrismaClient();
+import * as TaskService from '../services/services.tasks'
+
 
 //create new task
-export const createTask = async (req: Request, res: Response,next:NextFunction) => {
-    const { title, description } = req.body;
-    
+export const createTask = async (req:Request,res:Response,next:NextFunction) => {
+    const { title,description } = req.body
+    const task = {title,description}
     try {
-        const newTask = await client.task.create({
-        data: {
-            title,
-            description,
-        },
-        });
+        const newTask = await TaskService.createTask(task)
         res.status(201).json(newTask);
     } catch (error) {
        next(error)
@@ -22,11 +17,8 @@ export const createTask = async (req: Request, res: Response,next:NextFunction) 
 //get tasks
 export const getTasks = async (req: Request, res: Response,next:NextFunction) => {
     try {
-        const tasks = await client.task.findMany({
-            where:{
-                completed: false
-            }
-        });
+        //get all incomplete a.k.a pending tasks
+        const tasks = await TaskService.getPendingTasks();
         res.status(200).json(tasks);
     } catch (error) {
        next(error)
@@ -35,14 +27,10 @@ export const getTasks = async (req: Request, res: Response,next:NextFunction) =>
 
 //get 1 task 
 export const getTask = async (req: Request, res: Response,next:NextFunction) => {
-    console.log(req.params)
     const { id } = req.params;
 
     try {
-        const task = await client.task.findFirst({
-            where: { id },
-        });
-
+        const task = await TaskService.getTaskById(id)
         task
             ? res.status(200).json(task)
             : res.status(404).json({ error: "Task not found" });
@@ -53,21 +41,12 @@ export const getTask = async (req: Request, res: Response,next:NextFunction) => 
 
 //updtae task
 export const updateTask = async (req: Request, res: Response,next:NextFunction) => {
-   console.log(req.params)
-   console.log(req.body)
-
     const { id } = req.params;
     const { title, description, completed } = req.body;
+    const task = { title, description, completed }
 
     try {
-        const updatedTask = await client.task.update({
-            where: { id },
-            data: {
-                title,
-                description,
-                completed
-            },
-        });
+        const updatedTask = await TaskService.updateTaskById(id,task)
         res.status(200).json(updatedTask);
     } catch (error) {
         next(error)
@@ -78,11 +57,8 @@ export const updateTask = async (req: Request, res: Response,next:NextFunction) 
 //delete task
 export const deleteTask = async (req: Request, res: Response,next:NextFunction) => {
     const { id } = req.params;
-    console.log(id);
     try {
-        await client.task.delete({
-            where: { id },
-        });
+        await TaskService.deleteById(id)
         res.status(200).json({ message: "Task deleted!" });
     } catch (error) {
         next(error);
