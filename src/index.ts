@@ -5,13 +5,12 @@ import { errorHandler } from "./middleware/errorHandler";
 const app: Express = express();
 app.use(express.json());
 
-app.get("/", (_req,res) => {
-  res.send("<h1>Welcome to The Typescript Tasks API</h1>")
-})
+app.get("/", (_req, res) => {
+  res.send("<h1>Welcome to The Typescript Tasks API</h1>");
+});
 
-app.use('/tasks',TasksRouter)
-app.use(errorHandler)
-
+app.use("/tasks", TasksRouter);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
