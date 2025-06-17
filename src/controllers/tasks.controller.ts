@@ -2,10 +2,6 @@ import { Request,Response } from "express";
 import { PrismaClient } from "@prisma/client";
 const client = new PrismaClient();
 
-
-export const showHomePage = (_req: Request, res: Response) => {
-    res.send("<h1>WELCOME TO TODO API</h1>");
-}
 //create new task
 export const createTask = async (req: Request, res: Response) => {
     const { title, description } = req.body;

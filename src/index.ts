@@ -1,16 +1,15 @@
 import express, { Express, Request, Response } from "express";
-import { createTask, deleteTask, getTask, getTasks, showHomePage, updateTask } from "./routes/tasks.controller";
+import TasksRouter from "./routes/tasks.routes";
+
 
 const app: Express = express();
 app.use(express.json());
 
-//Routes
-app.get("/",showHomePage)
-app.post("/tasks",createTask);
-app.get("/tasks", getTasks);
-app.get("/tasks:/id",getTask);
-app.put("/tasks/:id", updateTask);
-app.delete("/tasks/:id", deleteTask)
+app.get("/", (_req,res) => {
+  res.send("<h1>Welcome to The Typescript Tasks API</h1>")
+})
+app.use('/tasks',TasksRouter)
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
